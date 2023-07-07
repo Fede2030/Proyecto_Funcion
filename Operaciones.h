@@ -4,53 +4,122 @@
 #define OPERACIONES_H
 
 #include <iostream>
-#include <list>
 
-template<class T>
-class List {
+template <typename T>
+class ListNode
+{
+public:
+    T data;
+    ListNode<T>* next;
+
+    ListNode(T value) : data(value), next(nullptr) {}
+};
+
+template <typename T>
+class List
+{
 private:
-    std::list<T> data;
+    ListNode<T>* head;
 
 public:
-    List() {}
+    List() : head(nullptr) {}
 
-    List(T* in_data, int in_size) {
-        for (int i = 0; i < in_size; i++) {
-            data.push_back(in_data[i]);
+    List(T* in_data, int in_size) : head(nullptr)
+    {
+        for (int i = 0; i < in_size; i++)
+        {
+            PushBack(in_data[i]);
         }
     }
 
-    void Print() {
-        typename std::list<T>::iterator it;
-        for (it = data.begin(); it != data.end(); ++it) {
-            std::cout << *it;
-            if (std::next(it) != data.end()) {
+    void PushBack(T value)
+    {
+        ListNode<T>* newNode = new ListNode<T>(value);
+
+        if (head == nullptr)
+        {
+            head = newNode;
+        }
+        else
+        {
+            ListNode<T>* current = head;
+            while (current->next != nullptr)
+            {
+                current = current->next;
+            }
+            current->next = newNode;
+        }
+    }
+
+    void Print()
+    {
+        ListNode<T>* current = head;
+        while (current != nullptr)
+        {
+            std::cout << current->data;
+            if (current->next != nullptr)
+            {
                 std::cout << ", ";
             }
+            current = current->next;
         }
         std::cout << std::endl;
     }
 
-    void PushBack(T value) {
-        data.push_back(value);
-    }
+    void Reverse()
+    {
+        ListNode<T>* prev = nullptr;
+        ListNode<T>* current = head;
+        ListNode<T>* next = nullptr;
 
-    void Reverse() {
-        data.reverse();
-    }
-
-    void Unique() {
-        std::list<T> uniqueList;
-        typename std::list<T>::iterator it;
-        for (it = data.begin(); it != data.end(); ++it) {
-            if (std::find(uniqueList.begin(), uniqueList.end(), *it) == uniqueList.end()) {
-                uniqueList.push_back(*it);
-            }
+        while (current != nullptr)
+        {
+            next = current->next;
+            current->next = prev;
+            prev = current;
+            current = next;
         }
-        data = uniqueList;
+
+        head = prev;
+    }
+
+    void Unique()
+    {
+        if (head == nullptr)
+            return;
+
+        ListNode<T>* current = head;
+        while (current != nullptr && current->next != nullptr)
+        {
+            ListNode<T>* runner = current;
+            while (runner->next != nullptr)
+            {
+                if (runner->next->data == current->data)
+                {
+                    ListNode<T>* duplicate = runner->next;
+                    runner->next = runner->next->next;
+                    delete duplicate;
+                }
+                else
+                {
+                    runner = runner->next;
+                }
+            }
+            current = current->next;
+        }
+    }
+
+
+    ~List()
+    {
+        ListNode<T>* current = head;
+        while (current != nullptr)
+        {
+            ListNode<T>* temp = current;
+            current = current->next;
+            delete temp;
+        }
     }
 };
 
 #endif // OPERACIONES_H
-
-
